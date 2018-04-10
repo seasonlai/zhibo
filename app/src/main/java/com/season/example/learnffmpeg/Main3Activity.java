@@ -99,7 +99,7 @@ public class Main3Activity extends AppCompatActivity implements LiveStateChangeL
         } else {
             button01.setText("停止");
             isStart = true;
-            livePusher.startPush("rtmp://send3.douyu.com/live/3251491rYfIpscG9?wsSecret=5b2505167306127f68f9137241570d40&wsTime=59e0a540&wsSeek=off");
+            livePusher.startPush("rtmp://120.79.12.83/myapp/mystream");
         }
     }
 

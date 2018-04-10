@@ -24,8 +24,8 @@ public class Main2Activity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myPlayer.play(input);
-//                myPlayer.play("rtmp://192.168.1.25/myapp/mystream");
+//                myPlayer.play(input);
+                myPlayer.play("rtmp://120.79.12.83/myapp/mystream");
             }
         });
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
