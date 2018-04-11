@@ -25,14 +25,14 @@ jstring jpath;
 JavaVM *g_jvm = NULL;
 
 void release(JNIEnv *env) {
-    if(!jpath){
+    if (!jpath) {
         LOGE("没东西释放了")
         return;
     }
     LOGE("开始释放--------------")
     env->ReleaseStringUTFChars(jpath, path);
     env->DeleteGlobalRef(jpath);
-    jpath=0;
+    jpath = 0;
     LOGE("释放path字符串完成...")
 
     if (audio) {
@@ -55,10 +55,17 @@ void release(JNIEnv *env) {
         delete (video);
         video = 0;
     }
-    if (g_jvm->DetachCurrentThread()!= JNI_OK) {
+    if (g_jvm->DetachCurrentThread() != JNI_OK) {
         LOGE("线程解绑JNIEnv失败")
     }
 
+}
+
+
+int interruptCallback(void *arg) {
+    if (isPlay)
+        return 0;
+    return 1;
 }
 
 void *process(void *args) {
@@ -75,7 +82,10 @@ void *process(void *args) {
     av_register_all();
     avformat_network_init();
 
+    isPlay = 1;
     AVFormatContext *pFormatContext = avformat_alloc_context();
+    pFormatContext->interrupt_callback.callback = interruptCallback;
+    pFormatContext->interrupt_callback.opaque = pFormatContext;
     int code;
     //2.打开输入视频文件
     if ((code = avformat_open_input(&pFormatContext, path, NULL, NULL)) != 0) {
@@ -122,7 +132,6 @@ void *process(void *args) {
 //    解码完整个视频 子线程
     int ret;
 
-    isPlay = 1;
     video->setFFmpegAudio(audio);
     video->play();
     audio->play();
@@ -130,7 +139,7 @@ void *process(void *args) {
     while (isPlay) {
 
         ret = av_read_frame(pFormatContext, packet);
-
+        LOGE("读取一个数据包 结果码：%d", ret);
         if (ret == 0) {
 
             if (audio && audio->isPlay && packet->stream_index == audio->index) {
